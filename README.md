@@ -1,1 +1,1 @@
-# Computer Games Programming
+# Computer Graphics Programming
