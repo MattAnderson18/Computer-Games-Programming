@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace GrafPack
+namespace Assignment
 {
     public partial class GrafPack : Form
     {
@@ -45,6 +45,7 @@ namespace GrafPack
 
             this.Menu = mainMenu;
             this.MouseClick += mouseClick;
+            this.MouseDown += mouseDown;
         }
 
         // Generally, all methods of the form are usually private
@@ -62,6 +63,12 @@ namespace GrafPack
         private void selectShape(object sender, EventArgs e)
         {
             MessageBox.Show("You selected the Select option...");
+        }
+
+        private void mouseDown(object sender, MouseEventArgs e)
+        {
+            // for rubber-banding
+            // xor animation?
         }
 
         // This method is quite important and detects all mouse clicks - other methods may need
@@ -97,7 +104,7 @@ namespace GrafPack
         }
     }
     
-    abstract class Shape
+    /*abstract class Shape
     {
         // This is the base class for Shapes in the application. It should allow an array or LL
         // to be created containing different kinds of shapes.
@@ -143,7 +150,7 @@ namespace GrafPack
         {
             Application.Run(new GrafPack());
         }
-    }
+    }*/
 }
 
 
