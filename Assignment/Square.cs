@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace Assignment
 {
@@ -22,7 +17,7 @@ namespace Assignment
         // from first principles. All other shapes should similarly be drawn from first principles. 
         // Ideally no C# standard library class or method should be used to create, draw or transform a shape
         // and instead should utilse user-developed code.
-        public void draw(System.Drawing.Graphics g, Pen blackPen)
+        public void draw(Graphics g, Pen pen)
         {
             // This method draws the square by calculating the positions of the other 2 corners
             double xDiff, yDiff, xMid, yMid;   // range and mid points of x & y  
@@ -34,10 +29,10 @@ namespace Assignment
             yMid = (oppPt.Y + keyPt.Y) / 2;
 
             // draw square
-            g.DrawLine(blackPen, (int)keyPt.X, (int)keyPt.Y, (int)(xMid + yDiff / 2), (int)(yMid - xDiff / 2));
-            g.DrawLine(blackPen, (int)(xMid + yDiff / 2), (int)(yMid - xDiff / 2), (int)oppPt.X, (int)oppPt.Y);
-            g.DrawLine(blackPen, (int)oppPt.X, (int)oppPt.Y, (int)(xMid - yDiff / 2), (int)(yMid + xDiff / 2));
-            g.DrawLine(blackPen, (int)(xMid - yDiff / 2), (int)(yMid + xDiff / 2), (int)keyPt.X, (int)keyPt.Y);
+            g.DrawLine(pen, (int)keyPt.X, (int)keyPt.Y, (int)(xMid + yDiff / 2), (int)(yMid - xDiff / 2));
+            g.DrawLine(pen, (int)(xMid + yDiff / 2), (int)(yMid - xDiff / 2), (int)oppPt.X, (int)oppPt.Y);
+            g.DrawLine(pen, (int)oppPt.X, (int)oppPt.Y, (int)(xMid - yDiff / 2), (int)(yMid + xDiff / 2));
+            g.DrawLine(pen, (int)(xMid - yDiff / 2), (int)(yMid + xDiff / 2), (int)keyPt.X, (int)keyPt.Y);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Assignment
 {
@@ -10,10 +11,13 @@ namespace Assignment
         private MainMenu mainMenu;
         private bool selectSquareStatus = false;
         private bool selectTriangleStatus = false;
+        private bool selectCircleStatus = false;
+
+        private List<Shape> shapes;
+        private Shape selectedShape = null;
 
         private int clicknumber = 0;
-        private Point one;
-        private Point two;
+        private Point one, two, three;
 
         public GrafPack()
         {
@@ -22,30 +26,37 @@ namespace Assignment
             this.WindowState = FormWindowState.Maximized;
             this.BackColor = Color.White;
 
+            this.shapes = new List<Shape>();
+
             // The following approach uses menu items coupled with mouse clicks
             MainMenu mainMenu = new MainMenu();
             MenuItem createItem = new MenuItem();
             MenuItem selectItem = new MenuItem();
             MenuItem squareItem = new MenuItem();
             MenuItem triangleItem = new MenuItem();
+            MenuItem circleItem = new MenuItem();
 
             createItem.Text = "&Create";
             squareItem.Text = "&Square";
             triangleItem.Text = "&Triangle";
+            circleItem.Text = "&Circle";
             selectItem.Text = "&Select";
             
             mainMenu.MenuItems.Add(createItem);
             mainMenu.MenuItems.Add(selectItem);
             createItem.MenuItems.Add(squareItem);
             createItem.MenuItems.Add(triangleItem);
+            createItem.MenuItems.Add(circleItem);
 
             selectItem.Click += new System.EventHandler(this.selectShape);
             squareItem.Click += new System.EventHandler(this.selectSquare);
             triangleItem.Click += new System.EventHandler(this.selectTriangle);
+            circleItem.Click += new System.EventHandler(this.selectCircle);
 
             this.Menu = mainMenu;
             this.MouseClick += mouseClick;
             this.MouseDown += mouseDown;
+            this.KeyUp += keyUp;
         }
 
         // Generally, all methods of the form are usually private
@@ -58,6 +69,13 @@ namespace Assignment
         private void selectTriangle(object sender, EventArgs e)
         {
             selectTriangleStatus = true;
+            MessageBox.Show("Click OK and then click once each at three locations to create a triangle");
+        }
+
+        private void selectCircle(object sender, EventArgs e)
+        {
+            selectCircleStatus = true;
+            MessageBox.Show("Click OK and then click once each at two locations to create a circle");
         }
 
         private void selectShape(object sender, EventArgs e)
@@ -98,59 +116,140 @@ namespace Assignment
 
                         Square aShape = new Square(one, two);
                         aShape.draw(g, blackpen);
+                        shapes.Add(aShape);
                     }
+                }
+                else if (selectTriangleStatus == true)
+                {
+                    if (clicknumber == 0)
+                    {
+                        one = new Point(e.X, e.Y);
+                        clicknumber = 1;
+                    }
+                    else if (clicknumber == 1)
+                    {
+                        two = new Point(e.X, e.Y);
+                        clicknumber = 2;
+                    }
+                    else
+                    {
+                        three = new Point(e.X, e.Y);
+                        clicknumber = 0;
+                        selectTriangleStatus = false;
+
+                        Graphics g = this.CreateGraphics();
+                        Pen blackpen = new Pen(Color.Black);
+
+                        Triangle triangle = new Triangle(one, two, three);
+                        triangle.Draw(g, blackpen);
+                        shapes.Add(triangle);
+                    }
+                }
+                else if (selectCircleStatus == true)
+                {
+                    if (clicknumber == 0)
+                    {
+                        one = new Point(e.X, e.Y);
+                        clicknumber = 1;
+                    }
+                    else
+                    {
+                        two = new Point(e.X, e.Y);
+                        clicknumber = 0;
+                        selectCircleStatus = false;
+
+                        Graphics g = this.CreateGraphics();
+                        Brush blackbrush = Brushes.Black;
+
+                        Circle circle = new Circle(one, Utils.Diff(one, two));
+                        circle.Draw(g, blackbrush);
+                        shapes.Add(circle);
+                    }
+                }
+                else
+                {
+                    // selecting shapes
                 }
             }
         }
+
+        private void redraw(Shape shape, Brush brush)
+        {
+
+            if (selectedShape is Square)
+            {
+                ((Square)selectedShape).draw(this.CreateGraphics(), new Pen(brush));
+            }
+            else if (selectedShape is Triangle)
+            {
+                ((Triangle)selectedShape).Draw(this.CreateGraphics(), new Pen(brush));
+            }
+            else if (selectedShape is Circle)
+            {
+                ((Circle)selectedShape).Draw(this.CreateGraphics(), brush);
+            }
+        }
+
+        private void selectShape(int direction)
+        {
+            if (shapes.Count < 1)
+            {
+                return;
+            }
+
+            if (selectedShape != null)
+            {
+                redraw(selectedShape, Brushes.Black);
+
+                int curIndex = shapes.IndexOf(selectedShape);
+
+                if (direction > 0)
+                {
+                    // right (+1)
+                    // curIndex + 1
+                    if (curIndex + direction <= shapes.Count -1)
+                    {
+                        selectedShape = shapes[curIndex + direction];
+                    }
+                    else
+                    {
+                        selectedShape = shapes[0];
+                    }
+                }
+                else
+                {
+                    // left (-1)
+                    // curIndex + (-1)
+                    if (curIndex + direction >= 0)
+                    {
+                        selectedShape = shapes[curIndex + direction];
+                    }
+                    else
+                    {
+                        selectedShape = shapes[shapes.Count - 1];
+                    }
+                }
+            }
+            else
+            {
+                selectedShape = shapes[0];
+            }
+
+            redraw(selectedShape, Brushes.Blue);
+        }
+
+        private void keyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Left )
+            {
+                selectShape(-1);
+            }
+            else if (e.KeyCode == Keys.Right)
+            {
+                selectShape(1);
+            }
+        }
     }
-    
-    /*abstract class Shape
-    {
-        // This is the base class for Shapes in the application. It should allow an array or LL
-        // to be created containing different kinds of shapes.
-        public Shape()   // constructor
-        {            
-        }
-    }
-    
-    class Square : Shape
-    {
-        //This class contains the specific details for a square defined in terms of opposite corners
-        Point keyPt, oppPt;      // these points identify opposite corners of the square
-
-        public Square(Point keyPt, Point oppPt)   // constructor
-        {
-            this.keyPt = keyPt;
-            this.oppPt = oppPt;
-        }
-
-        // You will need a different draw method for each kind of shape. Note the square is drawn
-        // from first principles. All other shapes should similarly be drawn from first principles. 
-        // Ideally no C# standard library class or method should be used to create, draw or transform a shape
-        // and instead should utilse user-developed code.
-	    public void draw(Graphics g, Pen blackPen)
-        {
-            // This method draws the square by calculating the positions of the other 2 corners
-            double xDiff, yDiff, xMid, yMid;   // range and mid points of x & y  
-
-            // calculate ranges and mid points
-            xDiff = oppPt.X - keyPt.X;
-            yDiff = oppPt.Y - keyPt.Y;
-            xMid = (oppPt.X + keyPt.X) / 2;
-            yMid = (oppPt.Y + keyPt.Y) / 2;
-
-            // draw square
-            g.DrawLine(blackPen, (int)keyPt.X, (int)keyPt.Y, (int)(xMid + yDiff / 2), (int)(yMid - xDiff / 2));
-            g.DrawLine(blackPen, (int)(xMid + yDiff / 2), (int)(yMid - xDiff / 2), (int)oppPt.X, (int)oppPt.Y);
-            g.DrawLine(blackPen, (int)oppPt.X, (int)oppPt.Y, (int)(xMid - yDiff / 2), (int)(yMid + xDiff / 2));
-            g.DrawLine(blackPen, (int)(xMid - yDiff / 2), (int)(yMid + xDiff / 2), (int)keyPt.X, (int)keyPt.Y);
-        }
-
-        public static void Main()
-        {
-            Application.Run(new GrafPack());
-        }
-    }*/
 }
 
 
