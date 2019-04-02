@@ -112,17 +112,12 @@ namespace Assignment
             // xor animation?
             if (clicknumber == 1 && e.Button == MouseButtons.Left)
             {
-                drawing = true;
-
                 Control control = (Control) sender;
 
-                if (selectSquareStatus == true)
+                if (selectSquareStatus)
                 {
+                    drawing = true;
                     drawingShape = drawSquare(one, e.Location, Pens.Red);
-                }
-                else if (selectCircleStatus == true)
-                {
-                    drawingShape = drawCircle(one, e.Location, Brushes.Red);
                 }
             }
         }
@@ -135,19 +130,12 @@ namespace Assignment
                 two = e.Location;
                 clicknumber = 0;
 
-                if (selectSquareStatus == true)
+                if (selectSquareStatus)
                 {
                     selectSquareStatus = false;
                     ((Square)drawingShape).draw(this.CreateGraphics(), Pens.White);
                     drawingShape = null;
                     shapes.Add(drawSquare(one, two, Pens.Black));
-                }
-                else if (selectCircleStatus == true)
-                {
-                    selectCircleStatus = false;
-                    ((Circle)drawingShape).Draw(this.CreateGraphics(), Brushes.White);
-                    drawingShape = null;
-                    shapes.Add(drawCircle(one, two, Brushes.Black));
                 }
             }
         }
@@ -158,15 +146,10 @@ namespace Assignment
             {
                 Point currentPoint = e.Location;
 
-                if (selectSquareStatus == true)
+                if (selectSquareStatus)
                 {
                     ((Square)drawingShape).draw(this.CreateGraphics(), Pens.White);
                     drawingShape = drawSquare(one, currentPoint, Pens.Red);
-                }
-                else if (selectCircleStatus == true)
-                {
-                    ((Circle)drawingShape).Draw(this.CreateGraphics(), Brushes.White);
-                    drawingShape = drawCircle(one, currentPoint, Brushes.Red);
                 }
             }
         }
@@ -211,7 +194,7 @@ namespace Assignment
             // 'if' statements can distinguish different selected menu operations to implement.
             // There may be other (better, more efficient) approaches to event handling,
             // but this approach works.
-            if (selectSquareStatus == true)
+            if (selectSquareStatus)
             {
                 if (clicknumber == 0)
                 {
@@ -233,7 +216,7 @@ namespace Assignment
                     shapes.Add(drawSquare(one, two, Pens.Black));
                 }
             }
-            else if (selectTriangleStatus == true)
+            else if (selectTriangleStatus)
             {
                 if (clicknumber == 0)
                 {
@@ -259,7 +242,7 @@ namespace Assignment
                     shapes.Add(triangle);
                 }
             }
-            else if (selectCircleStatus == true)
+            else if (selectCircleStatus)
             {
                 if (clicknumber == 0)
                 {
@@ -268,6 +251,11 @@ namespace Assignment
                 }
                 else
                 {
+                    if (drawing)
+                    {
+                        return;
+                    }
+
                     two = e.Location;
                     clicknumber = 0;
                     selectCircleStatus = false;
